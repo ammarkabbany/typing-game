@@ -55,29 +55,29 @@ export default function TypingArea({ onComplete, completed }: TypingAreaProps) {
           if (time <= 1) {
             clearInterval(intervalRef.current as NodeJS.Timeout);
             intervalRef.current = null;
-  
+
             // Calculate final stats using ref values
             const { totalCharactersTyped, input, totalErrors, errors } = statsRef.current;
             const totalTyped = totalCharactersTyped + input.length;
             const tErrors = totalErrors + errors;
-            const accuracy = totalTyped > 0 
-              ? Math.round(((totalTyped - tErrors) / totalTyped) * 100) 
+            const accuracy = totalTyped > 0
+              ? Math.round(((totalTyped - tErrors) / totalTyped) * 100)
               : 100;
 
             const timeElapsedMinutes = TIMER_DURATION / 60;
             const grossWPM = Math.round((totalTyped / 5) / timeElapsedMinutes);
-            
+
             onComplete({
               wpm: grossWPM > 0 ? grossWPM : 0,
               accuracy,
             });
-  
+
             return 0;
           }
           return time - 1;
         });
       }, 1000);
-  
+
       return () => {
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
@@ -102,9 +102,9 @@ export default function TypingArea({ onComplete, completed }: TypingAreaProps) {
     if (!isActive && newInput.length === 1) {
       setIsActive(true);
     }
-  
+
     setInput(newInput);
-  
+
     if (quote) {
       // Calculate new errors based on current input
       const newErrors = Array.from(newInput).reduce(
@@ -112,44 +112,20 @@ export default function TypingArea({ onComplete, completed }: TypingAreaProps) {
         0
       );
       setErrors(newErrors);
-  
+
       // If the quote is fully typed
       if (newInput.length === quote.text.length) {
         // Log total characters and errors
         // Update totals for accuracy calculations
         setTotalCharactersTyped((prev) => prev + newInput.length);
         setTotalErrors((prev) => prev + newErrors);
-  
+
         // Prepare for new quote
         setInput(""); // Reset input
         getRandomQuote().then(setQuote); // Fetch new quote
       }
     }
   };
-  
-  useEffect(() => {
-    const textarea = inputRef.current;
-
-    const preventTextSelection = (e: MouseEvent) => {
-        e.preventDefault();
-    };
-
-    if (textarea) {
-        textarea.addEventListener("mousedown", preventTextSelection);
-    }
-
-
-    return () => {
-        if (textarea) {
-            textarea.removeEventListener("mousedown", preventTextSelection);
-        }
-    };
-  }, []);
-
-  // force focus on the textarea
-  useEffect(() => {
-    inputRef.current?.focus();
-  });
 
   if (!quote) {
     // skeleton of the quote
@@ -172,16 +148,15 @@ export default function TypingArea({ onComplete, completed }: TypingAreaProps) {
           ref={inputRef}
           value={input}
           onChange={handleInput}
-          className="absolute inset-0 w-full h-full p-12 bg-transparent border-none resize-none focus:outline-none focus:ring-0 font-mono text-xl leading-relaxed text-transparent caret-current spellcheck-none select-none pointer-events-none opacity-0"
-          placeholder={quote.text}
+          className="absolute inset-0 w-full h-full p-12 bg-transparent border-none resize-none focus:outline-none focus:ring-0 font-mono text-2xl leading-relaxed opacity-0 text-transparent spellcheck-none select-none pointer-events-none"
           disabled={completed || timeLeft === 0 || input.length === quote.text.length}
           autoFocus
           spellCheck={false}
           autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-      />
+          autoCorrect="off"
+          autoCapitalize="off"
+          style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+        />
       </div>
     </div>
   );
