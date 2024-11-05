@@ -436,4 +436,4 @@ export const WORDS = require('../words.json');
 
 
 /** Duration of the typing test in seconds */
-export const TIMER_DURATION = 10;
+export const TIMER_DURATION = 60;
